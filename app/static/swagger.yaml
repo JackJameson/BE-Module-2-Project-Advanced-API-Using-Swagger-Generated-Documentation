@@ -276,6 +276,121 @@ paths:
           schema:
             $ref: "#/definitions/MechanicList"
 
+  /service_tickets:
+    post:
+      tags:
+        - service_tickets
+      summary: "Create a Service Ticket"
+      description: "Open a new service ticket for a customer."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Ticket details"
+          required: true
+          schema:
+            $ref: "#/definitions/ServiceTicketPayload"
+      responses:
+        201:
+          description: "Ticket created successfully"
+          schema:
+            $ref: "#/definitions/ServiceTicketResponse"
+          examples:
+            application/json:
+              id: 1
+              VIN: "1FTZR14E15PA82831"
+              customer_id: 3
+              service_date: "2023-04-01"
+              service_desc: "Engine oil change"
+
+    get:
+      tags:
+        - service_tickets
+      summary: "Get all Service Tickets"
+      description: "Retrieve a list of all service tickets, including assigned mechanics and customers."
+      responses:
+        200:
+          description: "List of service tickets"
+          schema:
+            $ref: "#/definitions/ServiceTicketList"
+
+  /service_tickets/my-tickets:
+    get:
+      tags:
+        - service_tickets
+      summary: "Get My Tickets"
+      description: "Retrieve tickets belonging to the logged-in customer."
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "List of user's tickets"
+          schema:
+            $ref: "#/definitions/ServiceTicketList"
+
+  /service_tickets/{id}:
+    put:
+      tags:
+        - service_tickets
+      summary: "Edit Service Ticket (Batch)"
+      description: "Update a ticket by adding or removing multiple mechanics at once."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/EditTicketPayload"
+      responses:
+        200:
+          description: "Ticket updated successfully"
+          schema:
+            $ref: "#/definitions/ServiceTicketResponse"
+
+  /service_tickets/{ticket_id}/assign-mechanic/{mechanic_id}:
+    put:
+      tags:
+        - service_tickets
+      summary: "Assign Mechanic"
+      description: "Add a specific mechanic to a service ticket."
+      parameters:
+        - name: "ticket_id"
+          in: "path"
+          required: true
+          type: "integer"
+        - name: "mechanic_id"
+          in: "path"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Mechanic assigned successfully"
+          schema:
+            $ref: "#/definitions/ServiceTicketResponse"
+
+  /service_tickets/{ticket_id}/remove-mechanic/{mechanic_id}:
+    put:
+      tags:
+        - service_tickets
+      summary: "Remove Mechanic"
+      description: "Remove a specific mechanic from a service ticket."
+      parameters:
+        - name: "ticket_id"
+          in: "path"
+          required: true
+          type: "integer"
+        - name: "mechanic_id"
+          in: "path"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Mechanic removed successfully"
+          schema:
+            $ref: "#/definitions/ServiceTicketResponse"
+
 definitions:
   LoginCredentials:
     type: "object"
@@ -433,3 +548,60 @@ definitions:
     type: "array"
     items:
       $ref: "#/definitions/MechanicResponse"
+
+  ServiceTicketPayload:
+    type: "object"
+    properties:
+      VIN:
+        type: "string"
+      customer_id:
+        type: "integer"
+      service_date:
+        type: "string"
+        format: "date"
+      service_desc:
+        type: "string"
+    required:
+      - VIN
+      - customer_id
+      - service_date
+      - service_desc
+
+  ServiceTicketResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      VIN:
+        type: "string"
+      service_date:
+        type: "string"
+        format: "date"
+      service_desc:
+        type: "string"
+      customer:
+        $ref: "#/definitions/CustomerResponse"
+      mechanics:
+        type: "array"
+        items:
+          $ref: "#/definitions/MechanicResponse"
+
+  ServiceTicketList:
+    type: "array"
+    items:
+      $ref: "#/definitions/ServiceTicketResponse"
+
+  EditTicketPayload:
+    type: "object"
+    properties:
+      add_mechanic_ids:
+        type: "array"
+        items:
+          type: "integer"
+      remove_mechanic_ids:
+        type: "array"
+        items:
+          type: "integer"
+    required:
+      - add_mechanic_ids
+      - remove_mechanic_ids
