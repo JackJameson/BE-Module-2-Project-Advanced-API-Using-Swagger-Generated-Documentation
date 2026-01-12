@@ -1,2 +1,2 @@
-Run the app.py file
-Open postman and make all the API calls from the Postman Library
+Run the flask_app.py file
+Open a browser and go to localhost/api/docs

@@ -161,6 +161,121 @@ paths:
               phone: "555-9999"
               password: "newpassword123"
 
+  /mechanics:
+    post:
+      tags:
+        - mechanics
+      summary: "Create a new Mechanic"
+      description: "Endpoint to add a new mechanic to the shop."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Mechanic Data"
+          required: true
+          schema:
+            $ref: "#/definitions/MechanicPayload"
+      responses:
+        201:
+          description: "Mechanic created successfully"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+
+    get:
+      tags:
+        - mechanics
+      summary: "Get all Mechanics"
+      description: "Retrieve a list of all mechanics. (Cached for 60 seconds)"
+      responses:
+        200:
+          description: "List of mechanics"
+          schema:
+            $ref: "#/definitions/MechanicList"
+
+  /mechanics/{id}:
+    get:
+      tags:
+        - mechanics
+      summary: "Get a Mechanic"
+      description: "Retrieve a specific mechanic by their ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Mechanic details"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+
+    put:
+      tags:
+        - mechanics
+      summary: "Update a Mechanic"
+      description: "Update details of an existing mechanic."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/MechanicPayload"
+      responses:
+        200:
+          description: "Mechanic updated successfully"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+
+    delete:
+      tags:
+        - mechanics
+      summary: "Delete a Mechanic"
+      description: "Remove a mechanic from the system."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Mechanic deleted successfully"
+          examples:
+            application/json:
+              message: "mechanic id: 1, deleted successfully"
+
+  /mechanics/top:
+    get:
+      tags:
+        - mechanics
+      summary: "Top Mechanics"
+      description: "Get a list of mechanics sorted by who has completed the most service tickets."
+      responses:
+        200:
+          description: "Sorted list of mechanics"
+          schema:
+            $ref: "#/definitions/MechanicList"
+
+  /mechanics/search:
+    get:
+      tags:
+        - mechanics
+      summary: "Search Mechanics"
+      description: "Search for a mechanic by name."
+      parameters:
+        - name: "name"
+          in: "query"
+          description: "The name (or partial name) to search for."
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Search results"
+          schema:
+            $ref: "#/definitions/MechanicList"
+
 definitions:
   LoginCredentials:
     type: "object"
