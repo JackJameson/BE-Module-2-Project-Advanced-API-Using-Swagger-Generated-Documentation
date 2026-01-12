@@ -391,6 +391,119 @@ paths:
           schema:
             $ref: "#/definitions/ServiceTicketResponse"
 
+  /service_tickets/{ticket_id}/add-part/{part_id}:
+    post:
+      tags:
+        - service_tickets
+      summary: "Add Part to Ticket"
+      description: "Associate a specific inventory part with a service ticket."
+      parameters:
+        - name: "ticket_id"
+          in: "path"
+          required: true
+          type: "integer"
+        - name: "part_id"
+          in: "path"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Part added to ticket successfully"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              service_ticket_id:
+                type: "integer"
+              part_added:
+                $ref: "#/definitions/InventoryResponse"
+
+  /inventory:
+    post:
+      tags:
+        - inventory
+      summary: "Create Inventory Part"
+      description: "Add a new part to the inventory."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Part Details"
+          required: true
+          schema:
+            $ref: "#/definitions/InventoryPayload"
+      responses:
+        201:
+          description: "Part created successfully"
+          schema:
+            $ref: "#/definitions/InventoryResponse"
+
+    get:
+      tags:
+        - inventory
+      summary: "Get all Parts"
+      description: "Retrieve a list of all inventory parts."
+      responses:
+        200:
+          description: "List of parts"
+          schema:
+            $ref: "#/definitions/InventoryList"
+
+  /inventory/{id}:
+    get:
+      tags:
+        - inventory
+      summary: "Get a Part"
+      description: "Retrieve a specific part by ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Part details"
+          schema:
+            $ref: "#/definitions/InventoryResponse"
+
+    put:
+      tags:
+        - inventory
+      summary: "Update a Part"
+      description: "Update details of an existing part."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/InventoryPayload"
+      responses:
+        200:
+          description: "Part updated successfully"
+          schema:
+            $ref: "#/definitions/InventoryResponse"
+
+    delete:
+      tags:
+        - inventory
+      summary: "Delete a Part"
+      description: "Remove a part from inventory."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Part deleted successfully"
+          examples:
+            application/json:
+              message: "Part id: 1 deleted successfully"
+
 definitions:
   LoginCredentials:
     type: "object"
@@ -605,3 +718,31 @@ definitions:
     required:
       - add_mechanic_ids
       - remove_mechanic_ids
+
+  InventoryPayload:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      price:
+        type: "number"
+        format: "float"
+    required:
+      - name
+      - price
+
+  InventoryResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      price:
+        type: "number"
+        format: "float"
+
+  InventoryList:
+    type: "array"
+    items:
+      $ref: "#/definitions/InventoryResponse"
