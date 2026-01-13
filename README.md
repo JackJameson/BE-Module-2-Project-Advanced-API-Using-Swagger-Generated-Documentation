@@ -1,2 +1,2 @@
-Run the flask_app.py file
-Open a browser and go to localhost/api/docs
+Type the following in the terminal and then hit enter:
+python -m unittest discover tests

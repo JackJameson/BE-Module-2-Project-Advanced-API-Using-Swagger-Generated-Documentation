@@ -2,8 +2,8 @@
 
 swagger: "2.0"
 info:
-  title: "Library API"
-  description: "This is a API to manage a Library"
+  title: "Mechanic Shop API"
+  description: "This is a API to manage a Mechanic Shop"
   version: "1.0.0"
 host: "127.0.0.1:5000"
 schemes:
