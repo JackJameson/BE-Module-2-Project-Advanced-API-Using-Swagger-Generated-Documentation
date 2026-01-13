@@ -1,5 +1,7 @@
 /venv
+venv/
 /__pycache__
+__pycache__/
 app/__pycache__/__init__.cpython-313.pyc
 app/__pycache__/extensions.cpython-313.pyc
 app/__pycache__/models.cpython-313.pyc
@@ -21,3 +23,4 @@ instance/testing.db
 tests/__pycache__/test_mechanics.cpython-313.pyc
 tests/__pycache__/test_service_tickets.cpython-313.pyc
 tests/__pycache__/test_inventory.cpython-313.pyc
+.env
