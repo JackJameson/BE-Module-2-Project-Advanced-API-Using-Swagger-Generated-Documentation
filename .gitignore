@@ -19,3 +19,4 @@ app/utils/__pycache__/util.cpython-313.pyc
 tests/__pycache__/test_customer.cpython-313.pyc
 instance/testing.db
 tests/__pycache__/test_mechanics.cpython-313.pyc
+tests/__pycache__/test_service_tickets.cpython-313.pyc
