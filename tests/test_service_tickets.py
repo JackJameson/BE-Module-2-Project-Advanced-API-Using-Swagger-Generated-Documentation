@@ -36,11 +36,6 @@ class TestServiceTicket(unittest.TestCase):
             self.part_id = self.part.id
             self.ticket_id = self.ticket.id
 
-    def tearDown(self):
-        with self.app.app_context():
-            db.session.remove()
-            db.drop_all()
-
     def test_create_service_ticket(self):
         ticket_payload = {
             "VIN": "NEWVIN98765",
