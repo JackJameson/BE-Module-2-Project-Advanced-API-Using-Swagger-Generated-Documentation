@@ -8,8 +8,9 @@ class TestServiceTicket(unittest.TestCase):
     def setUp(self):
         self.app = create_app('TestingConfig')
         self.client = self.app.test_client()
-        self.customer = Customer(name="Test Customer", email="cust@test.com", phone="555-0001", password="password")
-        self.mechanic = Mechanic(name="Test Mechanic", email="mech@test.com", phone="555-0002", salary=50000)
+
+        self.customer = Customer(name="Test Customer", email="cust@test.com", phone="1234567890", password="password")
+        self.mechanic = Mechanic(name="Test Mechanic", email="mech@test.com", phone="1234567899", salary=50000)
         self.part = Inventory(name="Oil Filter", price=15.50)
 
         with self.app.app_context():
@@ -30,8 +31,10 @@ class TestServiceTicket(unittest.TestCase):
             db.session.add(self.ticket)
             db.session.commit()
 
-            db.session.refresh(self.ticket)
-            db.session.refresh(self.mechanic)
+            self.customer_id = self.customer.id
+            self.mechanic_id = self.mechanic.id
+            self.part_id = self.part.id
+            self.ticket_id = self.ticket.id
 
     def tearDown(self):
         with self.app.app_context():
@@ -43,7 +46,7 @@ class TestServiceTicket(unittest.TestCase):
             "VIN": "NEWVIN98765",
             "service_date": "2025-02-01",
             "service_desc": "Brake Change",
-            "customer_id": 1
+            "customer_id": self.customer_id
         }
         response = self.client.post('/service_tickets/', json=ticket_payload)
         self.assertEqual(response.status_code, 201)
@@ -65,14 +68,14 @@ class TestServiceTicket(unittest.TestCase):
         self.assertEqual(len(response.json), 1)
 
     def test_assign_mechanic(self):
-        url = f'/service_tickets/{self.ticket.id}/assign-mechanic/{self.mechanic.id}'
+        url = f'/service_tickets/{self.ticket_id}/assign-mechanic/{self.mechanic_id}'
         response = self.client.put(url)
         
         self.assertEqual(response.status_code, 200)
         self.assertIn("successfully assigned", response.json['message'])
 
     def test_assign_mechanic_already_assigned(self):
-        url = f'/service_tickets/{self.ticket.id}/assign-mechanic/{self.mechanic.id}'
+        url = f'/service_tickets/{self.ticket_id}/assign-mechanic/{self.mechanic_id}'
         self.client.put(url)
         
         response = self.client.put(url)
@@ -80,17 +83,17 @@ class TestServiceTicket(unittest.TestCase):
         self.assertIn("already assigned", response.json['error'])
 
     def test_remove_mechanic(self):
-        assign_url = f'/service_tickets/{self.ticket.id}/assign-mechanic/{self.mechanic.id}'
+        assign_url = f'/service_tickets/{self.ticket_id}/assign-mechanic/{self.mechanic_id}'
         self.client.put(assign_url)
 
-        remove_url = f'/service_tickets/{self.ticket.id}/remove-mechanic/{self.mechanic.id}'
+        remove_url = f'/service_tickets/{self.ticket_id}/remove-mechanic/{self.mechanic_id}'
         response = self.client.put(remove_url)
         
         self.assertEqual(response.status_code, 200)
         self.assertIn("successfully removed", response.json['message'])
 
     def test_get_my_service_tickets(self):
-        token = encode_token(self.customer.id)
+        token = encode_token(self.customer_id)
         headers = {'Authorization': f"Bearer {token}"}
 
         response = self.client.get('/service_tickets/my-tickets', headers=headers)
@@ -101,18 +104,18 @@ class TestServiceTicket(unittest.TestCase):
 
     def test_edit_service_ticket(self):
         edit_payload = {
-            "add_mechanic_ids": [self.mechanic.id],
+            "add_mechanic_ids": [self.mechanic_id],
             "remove_mechanic_ids": []
         }
         
-        response = self.client.put(f'/service_tickets/{self.ticket.id}', json=edit_payload)
+        response = self.client.put(f'/service_tickets/{self.ticket_id}', json=edit_payload)
         
         self.assertEqual(response.status_code, 200)
         mechanic_list = response.json['mechanics']
-        self.assertTrue(any(m['id'] == self.mechanic.id for m in mechanic_list))
+        self.assertTrue(any(m['id'] == self.mechanic_id for m in mechanic_list))
 
     def test_add_part_to_ticket(self):
-        url = f'/service_tickets/{self.ticket.id}/add-part/{self.part.id}'
+        url = f'/service_tickets/{self.ticket_id}/add-part/{self.part_id}'
         response = self.client.post(url)
         
         self.assertEqual(response.status_code, 200)
